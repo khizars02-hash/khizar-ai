@@ -1,226 +1,200 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Khizar AI Tools</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Khizar AI</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial;
-      background: linear-gradient(135deg, #0f172a, #1e293b);
-      color: white;
-      text-align: center;
-    }
+<!-- Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 
-    h2 {
-      margin-top: 20px;
-    }
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins', sans-serif;
+}
 
-    .nav button {
-      margin: 5px;
-      padding: 10px;
-      cursor: pointer;
-    }
+body{
+  background:#0a0a0a;
+  color:white;
+}
 
-    .box {
-      margin-top: 20px;
-    }
+/* NAV */
+nav{
+  display:flex;
+  justify-content:space-between;
+  padding:20px 40px;
+  background:#000;
+}
+nav h2{
+  color:#d4af37;
+}
+nav a{
+  color:white;
+  margin-left:15px;
+  text-decoration:none;
+}
 
-    button {
-      padding: 10px 20px;
-      margin: 10px;
-      border: none;
-      background: #38bdf8;
-      color: black;
-      border-radius: 8px;
-      cursor: pointer;
-    }
+/* HERO */
+.hero{
+  height:90vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
+.hero h1{
+  font-size:55px;
+  color:#d4af37;
+}
+.hero p{
+  margin:10px 0;
+  opacity:0.8;
+}
 
-    img {
-      max-width: 300px;
-      margin-top: 10px;
-    }
-  </style>
+/* BUTTON */
+button{
+  padding:12px 25px;
+  border:none;
+  background:#d4af37;
+  color:black;
+  cursor:pointer;
+  transition:0.3s;
+  border-radius:8px;
+}
+button:hover{
+  transform:scale(1.1);
+}
+
+/* SECTIONS */
+section{
+  padding:60px 20px;
+  text-align:center;
+}
+
+/* CARDS */
+.cards{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+.card{
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(10px);
+  padding:20px;
+  margin:10px;
+  width:250px;
+  border-radius:15px;
+  transition:0.3s;
+}
+.card:hover{
+  transform:scale(1.05);
+}
+
+/* FAQ */
+.faq h3{
+  cursor:pointer;
+  background:#111;
+  padding:10px;
+  margin-top:10px;
+}
+.faq p{
+  display:none;
+  padding:10px;
+  background:#0f0f0f;
+}
+
+/* FOOTER */
+footer{
+  background:#000;
+  padding:20px;
+  text-align:center;
+  margin-top:40px;
+}
+</style>
 </head>
 
 <body>
 
-<h2>Khizar AI Multi Tools 🚀</h2>
+<!-- NAV -->
+<nav>
+  <h2>Khizar AI</h2>
+  <div>
+    <a href="#">Home</a>
+    <a href="#features">Features</a>
+    <a href="#blog">Blog</a>
+    <a href="#faq">FAQ</a>
+  </div>
+</nav>
 
-<div class="nav">
-  <button onclick="showTool('bg')">BG Remove</button>
-  <button onclick="showTool('pdf')">JPG → PDF</button>
-  <button onclick="showTool('audio')">Audio</button>
+<!-- HERO -->
+<div class="hero">
+  <h1>Khizar AI</h1>
+  <p>Next Generation AI Experience</p>
+  <button onclick="scrollDown()">Explore</button>
 </div>
 
-<!-- BG TOOL -->
-<div id="bg" class="box">
-  <input type="file" id="file"><br>
+<!-- FEATURES -->
+<section id="features">
+  <h2>Features</h2>
+  <div class="cards">
+    <div class="card">AI Chat System</div>
+    <div class="card">Fast Response</div>
+    <div class="card">Luxury UI Design</div>
+  </div>
+</section>
 
-  <button onclick="removeBg()">Remove BG</button>
-  <button onclick="colorize()">Colorize</button>
-  <button onclick="enhance()">Enhance</button>
-  <button onclick="downloadImage()">Download</button>
+<!-- BLOG -->
+<section id="blog">
+  <h2>Blogs</h2>
+  <div class="cards">
+    <div class="card">
+      <h3>AI Future</h3>
+      <p>AI is changing the world...</p>
+    </div>
+    <div class="card">
+      <h3>Technology</h3>
+      <p>New tech is coming daily...</p>
+    </div>
+  </div>
+</section>
 
-  <br>
-  <img id="result">
-</div>
+<!-- FAQ -->
+<section id="faq">
+  <h2>FAQs</h2>
+  <div class="faq">
 
-<!-- PDF TOOL -->
-<div id="pdf" class="box" style="display:none">
-  <input type="file" id="pdfFile"><br>
-  <button onclick="convertPDF()">Convert to PDF</button>
-</div>
+    <h3 onclick="toggle(this)">What is Khizar AI?</h3>
+    <p>Khizar AI is an advanced AI platform.</p>
 
-<!-- AUDIO TOOL -->
-<div id="audio" class="box" style="display:none">
-  <input type="file" id="audioFile"><br>
-  <button onclick="playAudio()">Play</button>
-</div>
+    <h3 onclick="toggle(this)">Is it free?</h3>
+    <p>Yes, totally free to use.</p>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <h3 onclick="toggle(this)">How it works?</h3>
+    <p>It uses smart AI system for responses.</p>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 Khizar AI | All Rights Reserved</p>
+</footer>
 
 <script>
-let file;
-let finalBlob;
-
-// NAVIGATION
-function showTool(tool){
-  document.getElementById("bg").style.display = "none";
-  document.getElementById("pdf").style.display = "none";
-  document.getElementById("audio").style.display = "none";
-
-  document.getElementById(tool).style.display = "block";
+function toggle(el){
+  let p = el.nextElementSibling;
+  p.style.display = (p.style.display === "block") ? "none" : "block";
 }
 
-// FILE SELECT
-document.getElementById("file").onchange = (e)=>{
-  file = e.target.files[0];
-};
-
-// BG REMOVE
-async function removeBg(){
-  if(!file){
-    alert("Select image!");
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("image_file", file);
-
-  const res = await fetch("https://api.remove.bg/v1.0/removebg", {
-    method: "POST",
-    headers: {
-      "X-Api-Key": "h1VjdyoYJmzjLiuj4H56xYrm"
-    },
-    body: formData
+function scrollDown(){
+  window.scrollTo({
+    top: window.innerHeight,
+    behavior: "smooth"
   });
-
-  const blob = await res.blob();
-  finalBlob = blob;
-
-  document.getElementById("result").src = URL.createObjectURL(blob);
-}
-
-// COLORIZE
-async function colorize(){
-  if(!file){
-    alert("Select image!");
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("image", file);
-
-  const res = await fetch("https://api.deepai.org/api/colorizer", {
-    method: "POST",
-    headers: {
-      "api-key": "5cb86dcb-0059-4d2b-87b6-e08ee800c686"
-    },
-    body: formData
-  });
-
-  const data = await res.json();
-
-  if(data.output_url){
-    document.getElementById("result").src = data.output_url;
-  } else {
-    alert("Colorize failed ❌");
-  }
-}
-
-// ENHANCE
-async function enhance(){
-  if(!file){
-    alert("Select image!");
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("image", file);
-
-  const res = await fetch("https://api.deepai.org/api/torch-srgan", {
-    method: "POST",
-    headers: {
-      "api-key": "5cb86dcb-0059-4d2b-87b6-e08ee800c686"
-    },
-    body: formData
-  });
-
-  const data = await res.json();
-
-  if(data.output_url){
-    document.getElementById("result").src = data.output_url;
-  } else {
-    alert("Enhance failed ❌");
-  }
-}
-
-// DOWNLOAD
-function downloadImage(){
-  const img = document.getElementById("result").src;
-
-  if(!img){
-    alert("Generate first!");
-    return;
-  }
-
-  window.open(img);
-}
-
-// JPG → PDF
-function convertPDF(){
-  const file = document.getElementById("pdfFile").files[0];
-
-  if(!file){
-    alert("Select image!");
-    return;
-  }
-
-  const reader = new FileReader();
-
-  reader.onload = function(e){
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF();
-
-    pdf.addImage(e.target.result, 'JPEG', 10, 10, 180, 160);
-    pdf.save("converted.pdf");
-  }
-
-  reader.readAsDataURL(file);
-}
-
-// AUDIO
-function playAudio(){
-  const file = document.getElementById("audioFile").files[0];
-
-  if(!file){
-    alert("Select audio!");
-    return;
-  }
-
-  const audio = new Audio(URL.createObjectURL(file));
-  audio.play();
 }
 </script>
 

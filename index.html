@@ -1,4 +1,232 @@
 <!DOCTYPE html>
+<html>
+<head>
+  <title>Khizar AI Tools</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: white;
+      text-align: center;
+    }
+
+    h2 {
+      margin-top: 20px;
+    }
+
+    .nav button {
+      margin: 5px;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .box {
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      background: #38bdf8;
+      color: black;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    img {
+      max-width: 300px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>Khizar AI Multi Tools 🚀</h2>
+
+<div class="nav">
+  <button onclick="showTool('bg')">BG Remove</button>
+  <button onclick="showTool('pdf')">JPG → PDF</button>
+  <button onclick="showTool('audio')">Audio</button>
+</div>
+
+<!-- BG TOOL -->
+<div id="bg" class="box">
+  <input type="file" id="file"><br>
+
+  <button onclick="removeBg()">Remove BG</button>
+  <button onclick="colorize()">Colorize</button>
+  <button onclick="enhance()">Enhance</button>
+  <button onclick="downloadImage()">Download</button>
+
+  <br>
+  <img id="result">
+</div>
+
+<!-- PDF TOOL -->
+<div id="pdf" class="box" style="display:none">
+  <input type="file" id="pdfFile"><br>
+  <button onclick="convertPDF()">Convert to PDF</button>
+</div>
+
+<!-- AUDIO TOOL -->
+<div id="audio" class="box" style="display:none">
+  <input type="file" id="audioFile"><br>
+  <button onclick="playAudio()">Play</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+let file;
+let finalBlob;
+
+// NAVIGATION
+function showTool(tool){
+  document.getElementById("bg").style.display = "none";
+  document.getElementById("pdf").style.display = "none";
+  document.getElementById("audio").style.display = "none";
+
+  document.getElementById(tool).style.display = "block";
+}
+
+// FILE SELECT
+document.getElementById("file").onchange = (e)=>{
+  file = e.target.files[0];
+};
+
+// BG REMOVE
+async function removeBg(){
+  if(!file){
+    alert("Select image!");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("image_file", file);
+
+  const res = await fetch("https://api.remove.bg/v1.0/removebg", {
+    method: "POST",
+    headers: {
+      "X-Api-Key": "h1VjdyoYJmzjLiuj4H56xYrm"
+    },
+    body: formData
+  });
+
+  const blob = await res.blob();
+  finalBlob = blob;
+
+  document.getElementById("result").src = URL.createObjectURL(blob);
+}
+
+// COLORIZE
+async function colorize(){
+  if(!file){
+    alert("Select image!");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const res = await fetch("https://api.deepai.org/api/colorizer", {
+    method: "POST",
+    headers: {
+      "api-key": "5cb86dcb-0059-4d2b-87b6-e08ee800c686"
+    },
+    body: formData
+  });
+
+  const data = await res.json();
+
+  if(data.output_url){
+    document.getElementById("result").src = data.output_url;
+  } else {
+    alert("Colorize failed ❌");
+  }
+}
+
+// ENHANCE
+async function enhance(){
+  if(!file){
+    alert("Select image!");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const res = await fetch("https://api.deepai.org/api/torch-srgan", {
+    method: "POST",
+    headers: {
+      "api-key": "5cb86dcb-0059-4d2b-87b6-e08ee800c686"
+    },
+    body: formData
+  });
+
+  const data = await res.json();
+
+  if(data.output_url){
+    document.getElementById("result").src = data.output_url;
+  } else {
+    alert("Enhance failed ❌");
+  }
+}
+
+// DOWNLOAD
+function downloadImage(){
+  const img = document.getElementById("result").src;
+
+  if(!img){
+    alert("Generate first!");
+    return;
+  }
+
+  window.open(img);
+}
+
+// JPG → PDF
+function convertPDF(){
+  const file = document.getElementById("pdfFile").files[0];
+
+  if(!file){
+    alert("Select image!");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function(e){
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF();
+
+    pdf.addImage(e.target.result, 'JPEG', 10, 10, 180, 160);
+    pdf.save("converted.pdf");
+  }
+
+  reader.readAsDataURL(file);
+}
+
+// AUDIO
+function playAudio(){
+  const file = document.getElementById("audioFile").files[0];
+
+  if(!file){
+    alert("Select audio!");
+    return;
+  }
+
+  const audio = new Audio(URL.createObjectURL(file));
+  audio.play();
+}
+</script>
+
+</body>
+</html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">

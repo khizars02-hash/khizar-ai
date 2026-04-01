@@ -23,12 +23,10 @@ body{
 /* NAV */
 nav{display:flex;justify-content:space-between;padding:20px;background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);}
 nav h2{color:#d4af37;text-shadow:0 0 10px gold;}
-nav a{color:white;margin-left:15px;text-decoration:none;}
 
 /* HERO */
-.hero{text-align:center;padding:100px 20px;}
+.hero{text-align:center;padding:80px;}
 .hero h1{font-size:55px;color:#d4af37;text-shadow:0 0 20px gold;}
-.hero p{opacity:0.8;margin:10px 0}
 
 /* BUTTON */
 button{
@@ -48,47 +46,19 @@ button:hover{transform:scale(1.1);box-shadow:0 0 15px gold;}
   backdrop-filter:blur(15px);
   padding:20px;
   margin:20px auto;
-  max-width:500px;
+  max-width:600px;
   border-radius:15px;
 }
 
 /* SLIDER */
-.compare{
-  position:relative;
-  max-width:500px;
-  margin:auto;
-}
-.compare img{
-  width:100%;
-  display:block;
-}
-.compare .after{
-  position:absolute;
-  top:0;
-  left:0;
-  overflow:hidden;
-  width:50%;
-}
-.slider{
-  position:absolute;
-  top:0;
-  left:50%;
-  width:4px;
-  height:100%;
-  background:#d4af37;
-  cursor:ew-resize;
-}
+.compare{position:relative;max-width:600px;margin:auto;}
+.compare img{width:100%;}
+.after{position:absolute;top:0;left:0;overflow:hidden;width:50%;}
+.slider{position:absolute;top:0;left:50%;width:4px;height:100%;background:#d4af37;cursor:ew-resize;}
 
 /* CHAT */
-.chatbox{
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  width:300px;
-  background:#111;
-  border-radius:10px;
-}
-.chat-body{height:200px;overflow:auto;padding:10px;font-size:14px;}
+.chatbox{position:fixed;bottom:20px;right:20px;width:300px;background:#111;border-radius:10px;}
+.chat-body{height:200px;overflow:auto;padding:10px;}
 .chat-input{display:flex;}
 .chat-input input{flex:1;padding:5px;border:none;}
 </style>
@@ -98,45 +68,34 @@ button:hover{transform:scale(1.1);box-shadow:0 0 15px gold;}
 
 <canvas id="particles"></canvas>
 
-<nav>
-<h2>Khizar AI</h2>
-<div>
-<a href="#">Home</a>
-<a href="#tools">Tools</a>
-<a href="#faq">FAQ</a>
-</div>
-</nav>
+<nav><h2>Khizar AI</h2></nav>
 
 <div class="hero">
 <h1>Welcome to Khizar AI 🚀</h1>
-<p>Ultimate AI Tools Platform</p>
+<p>All-in-One AI Tools</p>
 </div>
 
-<section id="tools">
+<section>
 
 <div class="card">
 <h3>Upload Image</h3>
 <input type="file" id="fileInput"><br>
+
 <button onclick="removeBG()">BG Remove</button>
 <button onclick="enhance()">Enhance</button>
 <button onclick="jpgToPdf()">JPG → PDF</button>
+<button onclick="download()">Download</button>
 </div>
 
-<!-- SLIDER -->
+<!-- DEMO + SLIDER -->
 <div class="compare">
-<img id="beforeImg">
+<img id="beforeImg" src="https://picsum.photos/600/400">
 <div class="after">
-<img id="afterImg">
+<img id="afterImg" src="https://picsum.photos/600/401">
 </div>
 <div class="slider" id="slider"></div>
 </div>
 
-</section>
-
-<!-- FAQ -->
-<section id="faq" style="text-align:center;padding:40px;">
-<h2>FAQs</h2>
-<p>All tools are free and powered by AI.</p>
 </section>
 
 <!-- CHAT -->
@@ -152,7 +111,7 @@ button:hover{transform:scale(1.1);box-shadow:0 0 15px gold;}
 // PARTICLES
 const c=document.getElementById("particles"),ctx=c.getContext("2d");
 c.width=innerWidth;c.height=innerHeight;
-let p=[];for(let i=0;i<100;i++){p.push({x:Math.random()*c.width,y:Math.random()*c.height,dx:(Math.random()-0.5),dy:(Math.random()-0.5)});}
+let p=[];for(let i=0;i<80;i++){p.push({x:Math.random()*c.width,y:Math.random()*c.height,dx:(Math.random()-0.5),dy:(Math.random()-0.5)});}
 function anim(){ctx.clearRect(0,0,c.width,c.height);ctx.fillStyle="white";
 p.forEach(e=>{e.x+=e.dx;e.y+=e.dy;ctx.fillRect(e.x,e.y,2,2);});
 requestAnimationFrame(anim);}anim();
@@ -166,6 +125,17 @@ r.onload=()=>beforeImg.src=r.result;
 r.readAsDataURL(file);
 };
 
+// DOWNLOAD FIX
+function download(){
+  if(!file) return alert("Upload first");
+  const url=URL.createObjectURL(file);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download=file.name;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 // BG REMOVE
 async function removeBG(){
 let api="2oDdEi4Ua4wjRnLQX6ni4kMw";
@@ -176,6 +146,7 @@ let res=await fetch("https://api.remove.bg/v1.0/removebg",{method:"POST",headers
 let blob=await res.blob();
 let url=URL.createObjectURL(blob);
 afterImg.src=url;
+downloadBlob(blob,"no-bg.png");
 }
 
 // ENHANCE
@@ -187,6 +158,10 @@ f.append("image",file);
 let res=await fetch("https://api.deepai.org/api/torch-srgan",{method:"POST",headers:{"api-key":api},body:f});
 let d=await res.json();
 afterImg.src=d.output_url;
+
+fetch(d.output_url)
+.then(r=>r.blob())
+.then(b=>downloadBlob(b,"enhanced.png"));
 }
 
 // PDF
@@ -198,19 +173,24 @@ img.src=beforeImg.src;
 img.onload=()=>{pdf.addImage(img,'JPEG',10,10,180,160);pdf.save("file.pdf");}
 }
 
-// SLIDER
-let slider=document.getElementById("slider");
-let after=document.querySelector(".after");
+// BLOB DOWNLOAD
+function downloadBlob(blob,name){
+let a=document.createElement("a");
+a.href=URL.createObjectURL(blob);
+a.download=name;
+a.click();
+}
 
+// SLIDER
 slider.onmousedown=()=>{
 document.onmousemove=e=>{
 let x=e.pageX/innerWidth*100;
-after.style.width=x+"%";
+afterImg.parentElement.style.width=x+"%";
 slider.style.left=x+"%";
 };
 };
 
-// CHAT
+// CHAT SMART
 function chat(){
 let i=chatInput.value.toLowerCase();
 chatBody.innerHTML+="<p><b>You:</b> "+i+"</p>";
@@ -218,7 +198,8 @@ let r="Samajh nahi aaya 😅";
 
 if(i.includes("hi")) r="Hello 👋";
 else if(i.includes("ai")) r="Main smart AI hoon 🤖";
-else if(i.includes("tool")) r="Main BG remove, PDF aur enhance karta hoon";
+else if(i.includes("pdf")) r="Main JPG ko PDF bana sakta hoon";
+else if(i.includes("bg")) r="Main background remove karta hoon";
 
 chatBody.innerHTML+="<p><b>AI:</b> "+r+"</p>";
 }

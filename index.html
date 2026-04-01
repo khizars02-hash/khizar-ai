@@ -6,7 +6,6 @@
 <title>Khizar AI Ultimate</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
@@ -27,8 +26,9 @@ nav h2{color:#d4af37;text-shadow:0 0 10px gold;}
 nav a{color:white;margin-left:15px;text-decoration:none;}
 
 /* HERO */
-.hero{text-align:center;padding:80px 20px;}
-.hero h1{font-size:50px;color:#d4af37;text-shadow:0 0 20px gold;}
+.hero{text-align:center;padding:100px 20px;}
+.hero h1{font-size:55px;color:#d4af37;text-shadow:0 0 20px gold;}
+.hero p{opacity:0.8;margin:10px 0}
 
 /* BUTTON */
 button{
@@ -47,13 +47,39 @@ button:hover{transform:scale(1.1);box-shadow:0 0 15px gold;}
   background:rgba(255,255,255,0.05);
   backdrop-filter:blur(15px);
   padding:20px;
-  margin:10px auto;
-  max-width:400px;
+  margin:20px auto;
+  max-width:500px;
   border-radius:15px;
-  box-shadow:0 0 20px rgba(212,175,55,0.2);
 }
 
-/* CHATBOT */
+/* SLIDER */
+.compare{
+  position:relative;
+  max-width:500px;
+  margin:auto;
+}
+.compare img{
+  width:100%;
+  display:block;
+}
+.compare .after{
+  position:absolute;
+  top:0;
+  left:0;
+  overflow:hidden;
+  width:50%;
+}
+.slider{
+  position:absolute;
+  top:0;
+  left:50%;
+  width:4px;
+  height:100%;
+  background:#d4af37;
+  cursor:ew-resize;
+}
+
+/* CHAT */
 .chatbox{
   position:fixed;
   bottom:20px;
@@ -61,13 +87,10 @@ button:hover{transform:scale(1.1);box-shadow:0 0 15px gold;}
   width:300px;
   background:#111;
   border-radius:10px;
-  overflow:hidden;
 }
-.chat-header{background:#d4af37;color:black;padding:10px;}
 .chat-body{height:200px;overflow:auto;padding:10px;font-size:14px;}
 .chat-input{display:flex;}
 .chat-input input{flex:1;padding:5px;border:none;}
-.chat-input button{border-radius:0;}
 </style>
 </head>
 
@@ -80,15 +103,15 @@ button:hover{transform:scale(1.1);box-shadow:0 0 15px gold;}
 <div>
 <a href="#">Home</a>
 <a href="#tools">Tools</a>
+<a href="#faq">FAQ</a>
 </div>
 </nav>
 
 <div class="hero">
-<h1>Khizar AI</h1>
+<h1>Welcome to Khizar AI 🚀</h1>
 <p>Ultimate AI Tools Platform</p>
 </div>
 
-<!-- TOOLS -->
 <section id="tools">
 
 <div class="card">
@@ -96,36 +119,39 @@ button:hover{transform:scale(1.1);box-shadow:0 0 15px gold;}
 <input type="file" id="fileInput"><br>
 <button onclick="removeBG()">BG Remove</button>
 <button onclick="enhance()">Enhance</button>
-<button onclick="download()">Download</button>
+<button onclick="jpgToPdf()">JPG → PDF</button>
 </div>
 
-<div class="card">
-<h3>JPG to PDF</h3>
-<button onclick="jpgToPdf()">Convert</button>
+<!-- SLIDER -->
+<div class="compare">
+<img id="beforeImg">
+<div class="after">
+<img id="afterImg">
 </div>
-
-<div class="card">
-<h3>Text to Audio</h3>
-<input type="text" id="textAudio">
-<button onclick="playAudio()">Play</button>
+<div class="slider" id="slider"></div>
 </div>
 
 </section>
 
-<!-- CHATBOT -->
+<!-- FAQ -->
+<section id="faq" style="text-align:center;padding:40px;">
+<h2>FAQs</h2>
+<p>All tools are free and powered by AI.</p>
+</section>
+
+<!-- CHAT -->
 <div class="chatbox">
-<div class="chat-header">Mini AI</div>
 <div class="chat-body" id="chatBody"></div>
 <div class="chat-input">
 <input type="text" id="chatInput">
-<button onclick="sendChat()">Send</button>
+<button onclick="chat()">Send</button>
 </div>
 </div>
 
 <script>
 // PARTICLES
 const c=document.getElementById("particles"),ctx=c.getContext("2d");
-c.width=window.innerWidth;c.height=window.innerHeight;
+c.width=innerWidth;c.height=innerHeight;
 let p=[];for(let i=0;i<100;i++){p.push({x:Math.random()*c.width,y:Math.random()*c.height,dx:(Math.random()-0.5),dy:(Math.random()-0.5)});}
 function anim(){ctx.clearRect(0,0,c.width,c.height);ctx.fillStyle="white";
 p.forEach(e=>{e.x+=e.dx;e.y+=e.dy;ctx.fillRect(e.x,e.y,2,2);});
@@ -133,78 +159,68 @@ requestAnimationFrame(anim);}anim();
 
 // FILE
 let file;
-document.getElementById("fileInput").addEventListener("change",e=>file=e.target.files[0]);
+fileInput.onchange=e=>{
+file=e.target.files[0];
+let r=new FileReader();
+r.onload=()=>beforeImg.src=r.result;
+r.readAsDataURL(file);
+};
 
-// 🔥 BG REMOVE (API READY)
+// BG REMOVE
 async function removeBG(){
-let api="yGmqAqS9ehuThJMVeBV6zxpC";
-let form=new FormData();
-form.append("image_file",file);
+let api="2oDdEi4Ua4wjRnLQX6ni4kMw";
+let f=new FormData();
+f.append("image_file",file);
 
-let res=await fetch("https://api.remove.bg/v1.0/removebg",{
-method:"POST",
-headers:{"X-Api-Key":api},
-body:form
-});
+let res=await fetch("https://api.remove.bg/v1.0/removebg",{method:"POST",headers:{"X-Api-Key":api},body:f});
 let blob=await res.blob();
-downloadBlob(blob,"no-bg.png");
+let url=URL.createObjectURL(blob);
+afterImg.src=url;
 }
 
-// 🔥 ENHANCE (DEEPAI)
+// ENHANCE
 async function enhance(){
 let api="5cb86dcb-0059-4d2b-87b6-e08ee800c686";
-let form=new FormData();
-form.append("image",file);
+let f=new FormData();
+f.append("image",file);
 
-let res=await fetch("https://api.deepai.org/api/torch-srgan",{
-method:"POST",
-headers:{"api-key":api},
-body:form
-});
-let data=await res.json();
-window.open(data.output_url);
+let res=await fetch("https://api.deepai.org/api/torch-srgan",{method:"POST",headers:{"api-key":api},body:f});
+let d=await res.json();
+afterImg.src=d.output_url;
 }
 
-// DOWNLOAD
-function download(){
-let link=document.createElement("a");
-link.href=URL.createObjectURL(file);
-link.download=file.name;
-link.click();
-}
-
-function downloadBlob(blob,name){
-let link=document.createElement("a");
-link.href=URL.createObjectURL(blob);
-link.download=name;
-link.click();
-}
-
-// JPG TO PDF
+// PDF
 function jpgToPdf(){
-const { jsPDF } = window.jspdf;
+const {jsPDF}=window.jspdf;
 let pdf=new jsPDF();
-pdf.text("Image Added",10,10);
-pdf.save("file.pdf");
+let img=new Image();
+img.src=beforeImg.src;
+img.onload=()=>{pdf.addImage(img,'JPEG',10,10,180,160);pdf.save("file.pdf");}
 }
 
-// AUDIO
-function playAudio(){
-let text=document.getElementById("textAudio").value;
-speechSynthesis.speak(new SpeechSynthesisUtterance(text));
-}
+// SLIDER
+let slider=document.getElementById("slider");
+let after=document.querySelector(".after");
 
-// CHATBOT (basic AI)
-function sendChat(){
-let input=document.getElementById("chatInput").value;
-let box=document.getElementById("chatBody");
-box.innerHTML+="<p><b>You:</b> "+input+"</p>";
+slider.onmousedown=()=>{
+document.onmousemove=e=>{
+let x=e.pageX/innerWidth*100;
+after.style.width=x+"%";
+slider.style.left=x+"%";
+};
+};
 
-let reply="I am Khizar AI 🤖";
-if(input.includes("hi")) reply="Hello 👋";
-if(input.includes("ai")) reply="I am your AI assistant";
+// CHAT
+function chat(){
+let i=chatInput.value.toLowerCase();
+chatBody.innerHTML+="<p><b>You:</b> "+i+"</p>";
+let r="Samajh nahi aaya 😅";
 
-box.innerHTML+="<p><b>AI:</b> "+reply+"</p>";
+if(i.includes("hi")) r="Hello 👋";
+else if(i.includes("ai")) r="Main smart AI hoon 🤖";
+else if(i.includes("tool")) r="Main BG remove, PDF aur enhance karta hoon";
+
+chatBody.innerHTML+="<p><b>AI:</b> "+r+"</p>";
 }
 </script>
 

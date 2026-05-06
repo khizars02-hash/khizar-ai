@@ -1,209 +1,99 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Khizar AI Ultimate</title>
+<title>Sambhal PDF Bhai</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-
-body{
-  background: radial-gradient(circle,#0a0a0a,#000);
-  color:white;
-  overflow-x:hidden;
+body {
+  background: #0d0d0d;
+  color: white;
+  font-family: Arial;
+  text-align: center;
 }
-
-/* PARTICLES */
-#particles{position:fixed;width:100%;height:100%;z-index:-1}
-
-/* NAV */
-nav{display:flex;justify-content:space-between;padding:20px;background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);}
-nav h2{color:#d4af37;text-shadow:0 0 10px gold;}
-
-/* HERO */
-.hero{text-align:center;padding:80px;}
-.hero h1{font-size:55px;color:#d4af37;text-shadow:0 0 20px gold;}
-
-/* BUTTON */
-button{
-  padding:10px 20px;
-  border:none;
-  background:#d4af37;
-  color:black;
-  border-radius:8px;
-  margin:5px;
-  cursor:pointer;
+.container {
+  margin: 20px auto;
+  width: 300px;
+  padding: 20px;
+  background: #1a1a1a;
+  border-radius: 10px;
 }
-button:hover{transform:scale(1.1);box-shadow:0 0 15px gold;}
-
-/* CARD */
-.card{
-  background:rgba(255,255,255,0.05);
-  backdrop-filter:blur(15px);
-  padding:20px;
-  margin:20px auto;
-  max-width:600px;
-  border-radius:15px;
+button {
+  background: #00ffcc;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
 }
-
-/* SLIDER */
-.compare{position:relative;max-width:600px;margin:auto;}
-.compare img{width:100%;}
-.after{position:absolute;top:0;left:0;overflow:hidden;width:50%;}
-.slider{position:absolute;top:0;left:50%;width:4px;height:100%;background:#d4af37;cursor:ew-resize;}
-
-/* CHAT */
-.chatbox{position:fixed;bottom:20px;right:20px;width:300px;background:#111;border-radius:10px;}
-.chat-body{height:200px;overflow:auto;padding:10px;}
-.chat-input{display:flex;}
-.chat-input input{flex:1;padding:5px;border:none;}
+input, textarea {
+  width: 100%;
+  margin-top: 10px;
+}
 </style>
 </head>
 
 <body>
 
-<canvas id="particles"></canvas>
+<h1>🖤 Sambhal PDF Bhai</h1>
 
-<nav><h2>Khizar AI</h2></nav>
-
-<div class="hero">
-<h1>Welcome to Khizar AI 🚀</h1>
-<p>All-in-One AI Tools</p>
+<div class="container">
+  <h3>JPG → PDF</h3>
+  <input type="file" id="jpgInput" multiple>
+  <button onclick="convertJPG()">Convert</button>
 </div>
 
-<section>
-
-<div class="card">
-<h3>Upload Image</h3>
-<input type="file" id="fileInput"><br>
-
-<button onclick="removeBG()">BG Remove</button>
-<button onclick="enhance()">Enhance</button>
-<button onclick="jpgToPdf()">JPG → PDF</button>
-<button onclick="download()">Download</button>
+<div class="container">
+  <h3>PDF → JPG</h3>
+  <p>⚠️ Browser me direct possible nahi</p>
 </div>
 
-<!-- DEMO + SLIDER -->
-<div class="compare">
-<img id="beforeImg" src="https://picsum.photos/600/400">
-<div class="after">
-<img id="afterImg" src="https://picsum.photos/600/401">
-</div>
-<div class="slider" id="slider"></div>
-</div>
-
-</section>
-
-<!-- CHAT -->
-<div class="chatbox">
-<div class="chat-body" id="chatBody"></div>
-<div class="chat-input">
-<input type="text" id="chatInput">
-<button onclick="chat()">Send</button>
-</div>
+<div class="container">
+  <h3>Unicode → Krutidev</h3>
+  <textarea id="textInput"></textarea>
+  <button onclick="convertText()">Convert</button>
+  <p id="output"></p>
 </div>
 
 <script>
-// PARTICLES
-const c=document.getElementById("particles"),ctx=c.getContext("2d");
-c.width=innerWidth;c.height=innerHeight;
-let p=[];for(let i=0;i<80;i++){p.push({x:Math.random()*c.width,y:Math.random()*c.height,dx:(Math.random()-0.5),dy:(Math.random()-0.5)});}
-function anim(){ctx.clearRect(0,0,c.width,c.height);ctx.fillStyle="white";
-p.forEach(e=>{e.x+=e.dx;e.y+=e.dy;ctx.fillRect(e.x,e.y,2,2);});
-requestAnimationFrame(anim);}anim();
+async function convertJPG() {
+  const { jsPDF } = window.jspdf;
+  let pdf = new jsPDF();
 
-// FILE
-let file;
-fileInput.onchange=e=>{
-file=e.target.files[0];
-let r=new FileReader();
-r.onload=()=>beforeImg.src=r.result;
-r.readAsDataURL(file);
-};
+  let files = document.getElementById("jpgInput").files;
 
-// DOWNLOAD FIX
-function download(){
-  if(!file) return alert("Upload first");
-  const url=URL.createObjectURL(file);
-  const a=document.createElement("a");
-  a.href=url;
-  a.download=file.name;
-  a.click();
-  URL.revokeObjectURL(url);
+  for (let i = 0; i < files.length; i++) {
+    let imgData = await toBase64(files[i]);
+
+    if (i > 0) pdf.addPage();
+    pdf.addImage(imgData, 'JPEG', 10, 10, 180, 160);
+  }
+
+  pdf.save("sambhal.pdf");
 }
 
-// BG REMOVE
-async function removeBG(){
-let api="2oDdEi4Ua4wjRnLQX6ni4kMw";
-let f=new FormData();
-f.append("image_file",file);
-
-let res=await fetch("https://api.remove.bg/v1.0/removebg",{method:"POST",headers:{"X-Api-Key":api},body:f});
-let blob=await res.blob();
-let url=URL.createObjectURL(blob);
-afterImg.src=url;
-downloadBlob(blob,"no-bg.png");
+function toBase64(file) {
+  return new Promise((resolve) => {
+    let reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.readAsDataURL(file);
+  });
 }
 
-// ENHANCE
-async function enhance(){
-let api="5cb86dcb-0059-4d2b-87b6-e08ee800c686";
-let f=new FormData();
-f.append("image",file);
+// Basic Unicode → Krutidev
+function convertText() {
+  let text = document.getElementById("textInput").value;
 
-let res=await fetch("https://api.deepai.org/api/torch-srgan",{method:"POST",headers:{"api-key":api},body:f});
-let d=await res.json();
-afterImg.src=d.output_url;
+  let result = text
+    .replace(/क/g, "d")
+    .replace(/ा/g, "k")
+    .replace(/न/g, "u");
 
-fetch(d.output_url)
-.then(r=>r.blob())
-.then(b=>downloadBlob(b,"enhanced.png"));
-}
-
-// PDF
-function jpgToPdf(){
-const {jsPDF}=window.jspdf;
-let pdf=new jsPDF();
-let img=new Image();
-img.src=beforeImg.src;
-img.onload=()=>{pdf.addImage(img,'JPEG',10,10,180,160);pdf.save("file.pdf");}
-}
-
-// BLOB DOWNLOAD
-function downloadBlob(blob,name){
-let a=document.createElement("a");
-a.href=URL.createObjectURL(blob);
-a.download=name;
-a.click();
-}
-
-// SLIDER
-slider.onmousedown=()=>{
-document.onmousemove=e=>{
-let x=e.pageX/innerWidth*100;
-afterImg.parentElement.style.width=x+"%";
-slider.style.left=x+"%";
-};
-};
-
-// CHAT SMART
-function chat(){
-let i=chatInput.value.toLowerCase();
-chatBody.innerHTML+="<p><b>You:</b> "+i+"</p>";
-let r="Samajh nahi aaya 😅";
-
-if(i.includes("hi")) r="Hello 👋";
-else if(i.includes("ai")) r="Main smart AI hoon 🤖";
-else if(i.includes("pdf")) r="Main JPG ko PDF bana sakta hoon";
-else if(i.includes("bg")) r="Main background remove karta hoon";
-
-chatBody.innerHTML+="<p><b>AI:</b> "+r+"</p>";
+  document.getElementById("output").innerText = result;
 }
 </script>
 
 </body>
+
 </html>

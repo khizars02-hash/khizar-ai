@@ -3,7 +3,9 @@
 <head>
 <title>Sambhal PDF Bhai</title>
 
+<!-- Libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
 
 <style>
 body {
@@ -12,12 +14,16 @@ body {
   font-family: Arial;
   text-align: center;
 }
+h1 {
+  margin-top: 20px;
+}
 .container {
   margin: 20px auto;
-  width: 300px;
+  width: 320px;
   padding: 20px;
   background: #1a1a1a;
-  border-radius: 10px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px #000;
 }
 button {
   background: #00ffcc;
@@ -26,10 +32,21 @@ button {
   cursor: pointer;
   width: 100%;
   margin-top: 10px;
+  border-radius: 6px;
 }
 input, textarea {
   width: 100%;
   margin-top: 10px;
+  border-radius: 6px;
+}
+.drop {
+  border: 2px dashed #00ffcc;
+  padding: 20px;
+  margin-top: 10px;
+}
+canvas {
+  margin-top: 10px;
+  max-width: 100%;
 }
 </style>
 </head>
@@ -38,62 +55,112 @@ input, textarea {
 
 <h1>🖤 Sambhal PDF Bhai</h1>
 
+<!-- JPG to PDF -->
 <div class="container">
   <h3>JPG → PDF</h3>
+  <div class="drop" id="dropArea">Drop Images Here</div>
   <input type="file" id="jpgInput" multiple>
-  <button onclick="convertJPG()">Convert</button>
+  <button onclick="convertJPG()">Convert to PDF</button>
 </div>
 
+<!-- PDF Viewer -->
 <div class="container">
-  <h3>PDF → JPG</h3>
-  <p>⚠️ Browser me direct possible nahi</p>
+  <h3>PDF Preview</h3>
+  <input type="file" id="pdfInput">
+  <button onclick="previewPDF()">Preview</button>
+  <div id="pdfPages"></div>
 </div>
 
+<!-- Unicode Converter -->
 <div class="container">
   <h3>Unicode → Krutidev</h3>
-  <textarea id="textInput"></textarea>
+  <textarea id="textInput" rows="4"></textarea>
   <button onclick="convertText()">Convert</button>
   <p id="output"></p>
 </div>
 
 <script>
+let droppedFiles = [];
+
+// Drag & Drop
+let dropArea = document.getElementById("dropArea");
+dropArea.ondragover = e => e.preventDefault();
+dropArea.ondrop = e => {
+  e.preventDefault();
+  droppedFiles = e.dataTransfer.files;
+  alert("Files added!");
+};
+
+// JPG → PDF
 async function convertJPG() {
   const { jsPDF } = window.jspdf;
   let pdf = new jsPDF();
 
-  let files = document.getElementById("jpgInput").files;
+  let files = droppedFiles.length ? droppedFiles : document.getElementById("jpgInput").files;
 
   for (let i = 0; i < files.length; i++) {
-    let imgData = await toBase64(files[i]);
+    let img = await toBase64(files[i]);
 
     if (i > 0) pdf.addPage();
-    pdf.addImage(imgData, 'JPEG', 10, 10, 180, 160);
+    pdf.addImage(img, 'JPEG', 10, 10, 180, 160);
   }
 
   pdf.save("sambhal.pdf");
 }
 
 function toBase64(file) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     let reader = new FileReader();
     reader.onload = () => resolve(reader.result);
     reader.readAsDataURL(file);
   });
 }
 
-// Basic Unicode → Krutidev
+// PDF Preview
+async function previewPDF() {
+  let file = document.getElementById("pdfInput").files[0];
+  let reader = new FileReader();
+
+  reader.onload = async function() {
+    let pdf = await pdfjsLib.getDocument({data: reader.result}).promise;
+    let container = document.getElementById("pdfPages");
+    container.innerHTML = "";
+
+    for (let i = 1; i <= pdf.numPages; i++) {
+      let page = await pdf.getPage(i);
+      let canvas = document.createElement("canvas");
+      let ctx = canvas.getContext("2d");
+
+      let viewport = page.getViewport({ scale: 1 });
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+
+      await page.render({ canvasContext: ctx, viewport }).promise;
+      container.appendChild(canvas);
+    }
+  };
+
+  reader.readAsArrayBuffer(file);
+}
+
+// Unicode → Krutidev (better demo)
 function convertText() {
   let text = document.getElementById("textInput").value;
 
-  let result = text
-    .replace(/क/g, "d")
-    .replace(/ा/g, "k")
-    .replace(/न/g, "u");
+  let map = {
+    "क":"d", "ख":"[k", "ग":"x", "ा":"k",
+    "ि":"f", "ी":"h", "ु":"q", "ू":"w",
+    "न":"u", "म":"e", "र":"j"
+  };
+
+  let result = "";
+  for (let ch of text) {
+    result += map[ch] || ch;
+  }
 
   document.getElementById("output").innerText = result;
 }
 </script>
 
 </body>
-
 </html>
